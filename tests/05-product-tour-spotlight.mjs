@@ -17,9 +17,13 @@ export async function run() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
-    // Step 1: Navigate to App & Wait for loading screen to clear
+    // Step 1: Navigate to App & Wait for loading to settle
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForFunction(() => !document.getElementById('loading-screen') || document.getElementById('loading-screen').classList.contains('hidden'), { timeout: 15000 });
+    await page.evaluate(() => {
+      const exploreBtn = document.querySelector('.first-run-explore-btn') ||
+        document.getElementById('first-run-dismiss');
+      if (exploreBtn) exploreBtn.click();
+    });
     await new Promise((r) => setTimeout(r, 2000));
     await captureStepScreenshot(page, TEST_NAME, 1, 'app-loaded-standby');
 

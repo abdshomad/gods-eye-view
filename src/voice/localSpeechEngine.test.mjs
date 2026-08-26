@@ -31,6 +31,21 @@ test('parseVoiceIntent: parses location queries in Indonesian and English', () =
     args: { query: 'monas' },
     feedback: 'Menavigasi ke monas.',
   });
+  assert.deepEqual(parseVoiceIntent('bisa ke new york'), {
+    tool: 'zoom_to_location',
+    args: { query: 'new york' },
+    feedback: 'Menavigasi ke new york.',
+  });
+  assert.deepEqual(parseVoiceIntent('mau ke tokyo dong'), {
+    tool: 'zoom_to_location',
+    args: { query: 'tokyo' },
+    feedback: 'Menavigasi ke tokyo.',
+  });
+  assert.deepEqual(parseVoiceIntent('pindah ke london'), {
+    tool: 'zoom_to_location',
+    args: { query: 'london' },
+    feedback: 'Menavigasi ke london.',
+  });
   assert.deepEqual(parseVoiceIntent('indonesia'), {
     tool: 'zoom_to_location',
     args: { query: 'indonesia' },

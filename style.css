@@ -9477,3 +9477,56 @@ body.scene-playback-mode #first-run-launcher {
   /* Scrolling a tile into view must not animate either. */
   .first-run-choices { scroll-behavior: auto; }
 }
+
+/* ==========================================================================
+   INTELLIGENT QUADRANT DOCKING & ANTI-OVERLAP COLLISION RULES
+   ========================================================================== */
+
+/* Left Quadrant (Layer Controls & Searches) */
+#layer-toggles,
+.gev-dock-left {
+  max-height: calc(100vh - 120px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  z-index: 90 !important;
+}
+
+/* Right Quadrant (Telemetry, CCTV, Post-Processing, FIRMS) */
+#pp-toggles,
+#live-feeds,
+.gev-dock-right,
+.satellite-card,
+.cctv-stream-container {
+  max-height: calc(100vh - 130px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  z-index: 90 !important;
+}
+
+/* Bottom Quadrant (Cockpit Controls & Timeline) */
+#cockpit-hud,
+#view-switcher,
+.gev-dock-bottom {
+  max-width: calc(100vw - 32px) !important;
+  z-index: 85 !important;
+}
+
+/* Top Quadrant (Global Status, Voice, Banner) */
+#top-bar,
+#global-loading-status,
+#demo-tour-hud {
+  z-index: 100 !important;
+}
+
+/* Responsive Anti-Overlap Viewport Constraints */
+@media (max-width: 1024px) {
+  #layer-toggles {
+    max-width: min(320px, 85vw) !important;
+    max-height: 60vh !important;
+  }
+  #pp-toggles,
+  #live-feeds {
+    max-width: min(320px, 85vw) !important;
+    max-height: 50vh !important;
+  }
+}

@@ -101,15 +101,13 @@ export function parseVoiceIntent(text) {
   }
 
   // 5. Navigation:
-  // "terbang ke [lokasi]", "arahkan ke [lokasi]", "pergi ke [lokasi]", "can you direct me to [place]", "take me to [place]", etc.
-  const navMatch = raw.match(/^(?:(?:can you|please|tolong)?\s*(?:direct me to|take me to|bring me to|fly to|go to|zoom to|search for|search|navigate to|show me|where is|terbang ke|pergi ke|arahkan ke|bawa saya ke|menuju ke|tampilkan|cari))\s+(.+)$/);
+  // "bisa ke [lokasi]", "mau ke [lokasi]", "terbang ke [lokasi]", "arahkan ke [lokasi]", "pergi ke [lokasi]", "take me to [place]", etc.
+  const navMatch = raw.match(/^(?:(?:can you|please|tolong|bisa|coba|mau|ingin|mohon|bisakah)?\s*(?:direct me to|take me to|bring me to|fly to|go to|zoom to|search for|search|navigate to|show me|where is|terbang ke|pergi ke|pindah ke|arahkan ke|bawa saya ke|menuju ke|menuju|tampilkan|cari|ke))\s+(.+)$/i);
   if (navMatch) {
-    const query = navMatch[1].replace(/^(?:the|a)\s+/i, '').trim();
-    return {
-      tool: 'zoom_to_location',
-      args: { query },
-      feedback: `Menavigasi ke ${query}.`,
-    };
+    const query = navMatch[1].replace(/^(?:the|a)\s+/i, '').replace(/\s+(?:dong|ya|nih|deh|please|lah|kah)$/i, '').trim();
+    if (query && !LAYER_MAP[query] && !STYLE_MAP[query]) {
+      return { tool: 'zoom_to_location', args: { query }, feedback: `Menavigasi ke ${query}.` };
+    }
   }
 
   // 6. Camera Controls: "orbit", "putar", "stop camera", "berhenti"
