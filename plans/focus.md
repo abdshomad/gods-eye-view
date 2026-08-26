@@ -1,1 +1,1 @@
-[FOCUS]: 1-click voice button toggle lifecycle with audio chimes and active ripple state
+[FOCUS]: Voice button toggle with Indonesian greeting "Siap! Silahkan bertanya apa saja" and active ripple state
