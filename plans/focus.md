@@ -1,1 +1,1 @@
-[FOCUS]: First-visit demo auto-play and skip lifecycle with persistent local storage
+[FOCUS]: Indonesian voice recognition expansion for colloquial demo commands (demo, demokan, demoin, putar demo, simulasikan)

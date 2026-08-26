@@ -1,6 +1,6 @@
-# Next Enhancements Plan (Focus: First-Visit Demo Auto-Play)
+# Next Enhancements Plan (Focus: Indonesian Colloquial Demo Voice Triggers)
 
 ## Active Tasks
-- [TODO] TASK-V01: Implement first-visit detection (gev_first_visit_demo_seen) and auto-play trigger in `src/demoTour.js`.
-- [TODO] TASK-V02: Add prominent [LEWATI TUR] skip control and ensure clean first-run transition in `src/demoTour.js` & `style.css`.
-- [TODO] TASK-V03: Verify first-visit auto-play and skip lifecycle with unit tests in `src/demoTour.test.mjs` and E2E suite `tests/04-indonesian-demo-mode.mjs`.
+- [TODO] TASK-V01: Add Indonesian colloquial voice intent grammar (demokan, demoin, putar demo, simulasikan) in `src/voice/localSpeechEngine.js`.
+- [TODO] TASK-V02: Update voice unit tests in `src/voice/localSpeechEngine.test.mjs` covering all Indonesian demo trigger variations.
+- [TODO] TASK-V03: Verify end-to-end voice demo execution with E2E suite `tests/02-local-voice-commands.mjs`.
