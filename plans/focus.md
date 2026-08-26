@@ -1,1 +1,1 @@
-[FOCUS]: In-browser Transformers.js semantic AI intent classifier in background Web Worker for voice-to-action translation
+[FOCUS]: Non-overlapping intelligent docking and accordion collision manager for platform widgets and panels

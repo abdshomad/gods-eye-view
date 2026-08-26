@@ -1,6 +1,6 @@
-# Next Enhancements Plan (Focus: In-Browser Transformers.js AI Intent Classifier)
+# Next Enhancements Plan (Focus: Non-Overlapping Widget Docking Layout)
 
 ## Active Tasks
-- [TODO] TASK-A01: Implement in-browser semantic embedding classifier and vector bank in `src/voice/semanticClassifier.js`.
-- [TODO] TASK-A02: Wire semantic intent classifier with fast-path regex and Web Worker pipeline in `src/voice/localSpeechEngine.js`.
-- [TODO] TASK-A03: Verify semantic voice-to-action classification with unit tests in `src/voice/semanticClassifier.test.mjs` and E2E suite `tests/02-local-voice-commands.mjs`.
+- [TODO] TASK-D01: Implement quadrant docking and anti-overlap layout rules in `style.css` for left, right, top, and bottom widget containers.
+- [TODO] TASK-D02: Add dynamic viewport collision and auto-accordion constraints for floating inspector cards and telemetry panels.
+- [TODO] TASK-D03: Verify zero widget overlap across desktop and responsive viewports with unit tests and E2E test suites.
