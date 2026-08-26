@@ -2060,6 +2060,18 @@ body.ui-clean-view #scene-runtime.active {
   color: #ffffff;
 }
 
+.mic-listening {
+  border-color: #00ffcc !important;
+  color: #00ffcc !important;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.8), inset 0 0 10px rgba(0, 255, 204, 0.4) !important;
+  animation: mic-ripple 1.5s infinite ease-in-out !important;
+}
+
+@keyframes mic-ripple {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 255, 204, 0.6); }
+  50% { transform: scale(1.08); box-shadow: 0 0 26px rgba(0, 255, 204, 0.95), 0 0 12px #00ffcc; }
+}
+
 /* Spotlight Product Tour */
 .product-tour-help-btn {
   color: #00d4ff !important;
@@ -2075,9 +2087,9 @@ body.ui-clean-view #scene-runtime.active {
   position: fixed;
   inset: 0;
   z-index: 110;
-  background: rgba(0, 4, 10, 0.65);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(4, 12, 24, 0.58);
+  backdrop-filter: blur(12px) saturate(180%) contrast(105%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%) contrast(105%);
   pointer-events: auto;
   animation: spotlight-fade-in 0.25s ease-out;
 }
@@ -2090,17 +2102,17 @@ body.ui-clean-view #scene-runtime.active {
 .spotlight-ring {
   position: fixed;
   z-index: 112;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 2px solid #00ffcc;
-  box-shadow: 0 0 24px rgba(0, 255, 204, 0.6), inset 0 0 12px rgba(0, 255, 204, 0.3);
+  box-shadow: 0 0 28px rgba(0, 255, 204, 0.7), inset 0 0 16px rgba(0, 255, 204, 0.4);
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   animation: spotlight-ring-pulse 2s infinite ease-in-out;
 }
 
 @keyframes spotlight-ring-pulse {
-  0%, 100% { box-shadow: 0 0 18px rgba(0, 255, 204, 0.5), inset 0 0 8px rgba(0, 255, 204, 0.25); }
-  50% { box-shadow: 0 0 32px rgba(0, 255, 204, 0.8), inset 0 0 18px rgba(0, 255, 204, 0.5); }
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.5), inset 0 0 10px rgba(0, 255, 204, 0.25); }
+  50% { box-shadow: 0 0 36px rgba(0, 255, 204, 0.85), inset 0 0 20px rgba(0, 255, 204, 0.55); }
 }
 
 .spotlight-card {
@@ -2108,12 +2120,12 @@ body.ui-clean-view #scene-runtime.active {
   z-index: 115;
   width: 340px;
   padding: 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 255, 204, 0.5);
-  background: rgba(6, 18, 28, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 204, 0.25);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 255, 204, 0.45);
+  background: rgba(6, 18, 30, 0.78);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 204, 0.2);
   pointer-events: auto;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   animation: card-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);

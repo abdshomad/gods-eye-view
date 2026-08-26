@@ -62,10 +62,20 @@ test('parseVoiceIntent: parses visual styles and demo tour', () => {
     args: { style: 'thermal' },
     feedback: 'Beralih ke gaya visual thermal.',
   });
-  assert.deepEqual(parseVoiceIntent('mulai demo'), {
+  assert.deepEqual(parseVoiceIntent('demokan'), {
     tool: 'start_demo_tour',
     args: {},
-    feedback: 'Memulai simulasi tur fitur 3D Digital Twin.',
+    feedback: 'Memulai tur demo otomatis 3D Digital Twin.',
+  });
+  assert.deepEqual(parseVoiceIntent('demoin'), {
+    tool: 'start_demo_tour',
+    args: {},
+    feedback: 'Memulai tur demo otomatis 3D Digital Twin.',
+  });
+  assert.deepEqual(parseVoiceIntent('putar demo'), {
+    tool: 'start_demo_tour',
+    args: {},
+    feedback: 'Memulai tur demo otomatis 3D Digital Twin.',
   });
   assert.deepEqual(parseVoiceIntent('lapisan 3d osm'), {
     tool: 'set_terrain_provider',

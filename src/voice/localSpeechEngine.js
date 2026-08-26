@@ -5,6 +5,8 @@
  * @module voice/localSpeechEngine
  */
 
+import { classifySemanticIntent } from './semanticClassifier.js';
+
 const LAYER_MAP = {
   flight: 'flights', flights: 'flights', plane: 'flights', planes: 'flights', aircraft: 'flights', pesawat: 'flights', penerbangan: 'flights',
   military: 'military', militer: 'military', vessel: 'vessels', vessels: 'vessels', ship: 'vessels', ships: 'vessels', boat: 'vessels', kapal: 'vessels', pelayaran: 'vessels',
@@ -33,9 +35,9 @@ export function parseVoiceIntent(text) {
   if (!text || typeof text !== 'string') return null;
   const raw = text.trim().toLowerCase();
 
-  // 0. Demo Mode simulation & Product Tour triggers
-  if (/^(?:mulai demo|start demo|simulasi fitur|jalankan demo|demo)$/.test(raw)) {
-    return { tool: 'start_demo_tour', args: {}, feedback: 'Memulai simulasi tur fitur 3D Digital Twin.' };
+  // 0. Demo Mode simulation & colloquial triggers (demokan, demoin, putar demo)
+  if (/^(?:mulai demo|start demo|simulasi fitur|simulasi|simulasikan|jalankan demo|demo|demokan|demoin|coba demo|mainkan demo|putar demo|tampilkan demo|lihat demo|tunjukkan demo|tur digital twin|tur sistem)$/.test(raw)) {
+    return { tool: 'start_demo_tour', args: {}, feedback: 'Memulai tur demo otomatis 3D Digital Twin.' };
   }
   if (/^(?:panduan sistem|panduan|cara penggunaan|bantuan|product tour|tour|guide|help)$/.test(raw)) {
     return { tool: 'start_product_tour', args: {}, feedback: 'Membuka panduan penggunaan sistem 3D Digital Twin.' };
@@ -77,27 +79,14 @@ export function parseVoiceIntent(text) {
 
   // 3. Layer toggles (Indonesian & English)
   const enableMatch = raw.match(/^(?:show|enable|turn on|display|activate|tampilkan|aktifkan|nyalakan|buka)\s+(.+)$/);
-  if (enableMatch) {
+  if (enableMatch && LAYER_MAP[enableMatch[1].trim()]) {
     const key = enableMatch[1].trim();
-    if (LAYER_MAP[key]) {
-      return {
-        tool: 'set_layer_visibility',
-        args: { layerId: LAYER_MAP[key], enabled: true },
-        feedback: `Mengaktifkan lapisan ${key}.`,
-      };
-    }
+    return { tool: 'set_layer_visibility', args: { layerId: LAYER_MAP[key], enabled: true }, feedback: `Mengaktifkan lapisan ${key}.` };
   }
-
   const disableMatch = raw.match(/^(?:hide|disable|turn off|stop|deactivate|sembunyikan|matikan|nonaktifkan|tutup)\s+(.+)$/);
-  if (disableMatch) {
+  if (disableMatch && LAYER_MAP[disableMatch[1].trim()]) {
     const key = disableMatch[1].trim();
-    if (LAYER_MAP[key]) {
-      return {
-        tool: 'set_layer_visibility',
-        args: { layerId: LAYER_MAP[key], enabled: false },
-        feedback: `Menonaktifkan lapisan ${key}.`,
-      };
-    }
+    return { tool: 'set_layer_visibility', args: { layerId: LAYER_MAP[key], enabled: false }, feedback: `Menonaktifkan lapisan ${key}.` };
   }
 
   // 4. Visual Styles: "set style to [style]" or "[style] style/filter/mode", "mode [style]", "gaya [style]"
@@ -137,6 +126,16 @@ export function parseVoiceIntent(text) {
       tool: 'zoom_to_location',
       args: { query: raw },
       feedback: `Menavigasi ke ${raw}.`,
+    };
+  }
+
+  // 8. Tier 2 In-Browser Semantic Intent Classifier (Transformers.js / Cosine Prototype Engine)
+  const semanticMatch = classifySemanticIntent(raw);
+  if (semanticMatch) {
+    return {
+      tool: semanticMatch.tool,
+      args: semanticMatch.args,
+      feedback: semanticMatch.feedback,
     };
   }
 

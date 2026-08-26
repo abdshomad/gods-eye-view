@@ -54,4 +54,10 @@ test('createUnifiedVoiceManager: mode switching and fallback without cloud API k
 
   manager.setMode('local');
   assert.equal(manager.getMode(), 'local');
+
+  // Test start/toggle greeting
+  let spoken = [];
+  manager.tts.speak = (t) => spoken.push(t);
+  manager.start();
+  assert.ok(spoken.includes('Siap! Silahkan bertanya apa saja'));
 });

@@ -67,7 +67,7 @@ export function createDemoTourController({
           <button id="demo-playpause-btn" type="button" class="demo-ctrl-btn demo-btn-accent">${isPaused ? '▶ RESUME' : '⏸ PAUSE'}</button>
           <button id="demo-next-btn" type="button" class="demo-ctrl-btn" title="Tahap Berikutnya">NEXT ▶</button>
           <button id="demo-speed-btn" type="button" class="demo-ctrl-btn" title="Ubah Kecepatan">${speedMultiplier}x</button>
-          <button id="demo-exit-btn" type="button" class="demo-ctrl-btn demo-btn-danger">KELUAR ✕</button>
+          <button id="demo-exit-btn" type="button" class="demo-ctrl-btn demo-btn-danger" title="Lewati Tur Demo">LEWATI TUR ✕</button>
         </div>
       </div>
     `;
@@ -146,6 +146,7 @@ export function createDemoTourController({
     isPaused = false;
     if (timerId) clearTimeout(timerId);
     timerId = null;
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('gev_first_visit_demo_seen', 'true'); } catch (_) {}
     removeHud();
     styleManager?.setCockpitMode?.(false);
     styleManager?.setStyle?.('normal');
@@ -155,6 +156,7 @@ export function createDemoTourController({
 
   function finish() {
     stop();
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('gev_first_visit_demo_seen', 'true'); } catch (_) {}
     if (ttsController?.speak) ttsController.speak('Simulasi seluruh fitur 3D Digital Twin telah selesai.');
   }
 
@@ -185,6 +187,12 @@ export function createDemoTourController({
       const stageMatch = search.match(/[?&]stage=(\d+)/i);
       if (stageMatch) {
         setTimeout(() => start(Math.max(0, parseInt(stageMatch[1], 10) - 1)), 1200);
+      } else {
+        try {
+          if (!localStorage.getItem('gev_first_visit_demo_seen')) {
+            setTimeout(() => start(0), 1200);
+          }
+        } catch (_) {}
       }
     }
   }

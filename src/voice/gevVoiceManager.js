@@ -29,6 +29,31 @@ export function writeStoredVoiceMode(storage, mode) {
   } catch {}
 }
 
+export function playChime(type = 'on') {
+  if (typeof window === 'undefined' || (!window.AudioContext && !window.webkitAudioContext)) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    const now = ctx.currentTime;
+    if (type === 'on') {
+      osc.frequency.setValueAtTime(660, now);
+      osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+    } else {
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.12);
+    }
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.16);
+  } catch (_) {}
+}
+
 /**
  * Creates the unified voice manager coordinating local STT/TTS and cloud Realtime.
  */
@@ -154,13 +179,34 @@ export function createUnifiedVoiceManager({
     localEngine,
     cloudController,
     isActive: () => (mode === 'local' ? localEngine.isActive() : cloudController?.isActive?.()),
-    start: () => (mode === 'local' ? localEngine.start() : cloudController?.start?.()),
-    stop: () => (mode === 'local' ? localEngine.stop() : cloudController?.stop?.()),
+    start: () => {
+      playChime('on');
+      if (ttsController?.speak) ttsController.speak('Siap! Silahkan bertanya apa saja');
+      return mode === 'local' ? localEngine.start() : cloudController?.start?.();
+    },
+    stop: () => {
+      playChime('off');
+      return mode === 'local' ? localEngine.stop() : cloudController?.stop?.();
+    },
     toggle: function () {
       if (mode === 'local') {
-        return localEngine.toggle();
+        if (localEngine.isActive()) {
+          localEngine.stop();
+          playChime('off');
+        } else {
+          localEngine.start();
+          playChime('on');
+          if (ttsController?.speak) ttsController.speak('Siap! Silahkan bertanya apa saja');
+        }
+      } else {
+        if (cloudController?.isActive?.()) {
+          cloudController.stop();
+          playChime('off');
+        } else {
+          cloudController?.start?.();
+          playChime('on');
+        }
       }
-      return cloudController?.isActive?.() ? cloudController.stop() : cloudController?.start?.();
     },
   };
 }
