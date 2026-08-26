@@ -1,1 +1,1 @@
-[FOCUS]: Indonesian voice recognition expansion for colloquial demo commands (demo, demokan, demoin, putar demo, simulasikan)
+[FOCUS]: Glassmorphic semi-transparent spotlight backdrop overlay and dual-glow pulsing neon target rings
