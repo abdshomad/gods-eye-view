@@ -1,1 +1,1 @@
-[FOCUS]: Non-overlapping intelligent docking and accordion collision manager for platform widgets and panels
+[FOCUS]: Xenova/NLLB-200 multi-lingual voice translation (Indonesian, Javanese, Sundanese) and natural navigation prefix extraction

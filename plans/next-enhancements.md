@@ -1,6 +1,6 @@
-# Next Enhancements Plan (Focus: Non-Overlapping Widget Docking Layout)
+# Next Enhancements Plan (Focus: Xenova/NLLB-200 Multi-Lingual Translation & Natural Nav Extractor)
 
 ## Active Tasks
-- [TODO] TASK-D01: Implement quadrant docking and anti-overlap layout rules in `style.css` for left, right, top, and bottom widget containers.
-- [TODO] TASK-D02: Add dynamic viewport collision and auto-accordion constraints for floating inspector cards and telemetry panels.
-- [TODO] TASK-D03: Verify zero widget overlap across desktop and responsive viewports with unit tests and E2E test suites.
+- [TODO] TASK-N01: Implement in-browser multi-lingual translation bridge in `src/voice/nllbTranslator.js` using Xenova/nllb-200.
+- [TODO] TASK-N02: Expand natural navigation regex (bisa ke, mau ke, coba ke, pindah ke) and colloquial suffix cleaning in `src/voice/localSpeechEngine.js`.
+- [TODO] TASK-N03: Add comprehensive unit tests in `src/voice/nllbTranslator.test.mjs` and verify with E2E suite `tests/02-local-voice-commands.mjs`.
