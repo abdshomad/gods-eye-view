@@ -27,6 +27,7 @@ import { createDemoTourController } from './demoTour.js';
 import { createProductTourController } from './productTour.js';
 import { TerrainManager } from './terrain/terrainManager.js';
 import { SplatManager } from './splats/splatManager.js';
+import { AtmosphereController } from './atmosphere.js';
 import {
   installRenderGovernor,
   getRenderGovernorDiagnostics,
@@ -340,8 +341,11 @@ async function init() {
     window.__godsEyeView.productTour = productTour;
     const terrainManager = new TerrainManager(viewer, { googleApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY });
     const splatManager = new SplatManager(viewer);
+    const atmosphereController = new AtmosphereController(viewer);
+    atmosphereController.applyPreset('tropical_day');
     window.__godsEyeView.terrainManager = terrainManager;
     window.__godsEyeView.splatManager = splatManager;
+    window.__godsEyeView.atmosphereController = atmosphereController;
 
   } catch (error) {
     console.error("God's Eye View initialization failed:", error);

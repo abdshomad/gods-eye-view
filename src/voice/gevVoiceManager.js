@@ -71,6 +71,10 @@ export function createUnifiedVoiceManager({
       window.__godsEyeView?.splatManager?.loadLandmarkSplat?.(args.landmarkId);
       return { success: true };
     }
+    if (tool === 'set_atmosphere_preset') {
+      window.__godsEyeView?.atmosphereController?.applyPreset?.(args.preset);
+      return { success: true };
+    }
     if (actionRunner) return actionRunner(tool, args);
   };
 

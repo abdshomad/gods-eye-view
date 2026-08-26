@@ -54,6 +54,17 @@ export function parseVoiceIntent(text) {
     return { tool: 'inspect_landmark_splat', args: { landmarkId: key }, feedback: `Memuat rekonstruksi 3D ${splatMatch[1].toUpperCase()}.` };
   }
 
+  // 0c. Atmospheric Lighting Presets
+  if (/^(?:golden hour|waktu sore|suasana sore|sunset)$/.test(raw)) {
+    return { tool: 'set_atmosphere_preset', args: { preset: 'tropical_golden_hour' }, feedback: 'Beralih ke pencahayaan atmosfer golden hour.' };
+  }
+  if (/^(?:waktu siang|suasana siang|siang hari)$/.test(raw)) {
+    return { tool: 'set_atmosphere_preset', args: { preset: 'tropical_day' }, feedback: 'Beralih ke pencahayaan atmosfer siang hari.' };
+  }
+  if (/^(?:waktu malam|suasana malam|malam hari)$/.test(raw)) {
+    return { tool: 'set_atmosphere_preset', args: { preset: 'tropical_night' }, feedback: 'Beralih ke pencahayaan atmosfer malam hari.' };
+  }
+
   // 1. Globe view
   if (/^(zoom to globe|reset view|show globe|whole earth|planet view|globe|kembali ke bumi|tampilan bumi|reset tampilan|lihat bumi)$/.test(raw)) {
     return { tool: 'zoom_to_globe', args: {}, feedback: 'Mengarahkan ke tampilan global bumi.' };
