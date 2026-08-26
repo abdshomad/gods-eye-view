@@ -41,6 +41,19 @@ export function parseVoiceIntent(text) {
     return { tool: 'start_product_tour', args: {}, feedback: 'Membuka panduan penggunaan sistem 3D Digital Twin.' };
   }
 
+  // 0b. 3D Terrain Provider & Landmark Splat Inspection
+  if (/^(?:lapisan 3d osm|bangunan 3d|mode 3d osm|osm 3d|3d osm)$/.test(raw)) {
+    return { tool: 'set_terrain_provider', args: { provider: 'osm' }, feedback: 'Beralih ke lapisan bangunan 3D OpenStreetMap.' };
+  }
+  if (/^(?:foto 3d google|google 3d|google 3d tiles|bangunan photoreal)$/.test(raw)) {
+    return { tool: 'set_terrain_provider', args: { provider: 'google' }, feedback: 'Beralih ke ubin 3D fotorealistik.' };
+  }
+  const splatMatch = raw.match(/^(?:inspeksi|lihat|splat)\s+(borobudur|monas|ikn|nusantara)$/);
+  if (splatMatch) {
+    const key = splatMatch[1] === 'monas' ? 'monas_jakarta' : splatMatch[1] === 'borobudur' ? 'borobudur' : 'ikn_nusantara';
+    return { tool: 'inspect_landmark_splat', args: { landmarkId: key }, feedback: `Memuat rekonstruksi 3D ${splatMatch[1].toUpperCase()}.` };
+  }
+
   // 1. Globe view
   if (/^(zoom to globe|reset view|show globe|whole earth|planet view|globe|kembali ke bumi|tampilan bumi|reset tampilan|lihat bumi)$/.test(raw)) {
     return { tool: 'zoom_to_globe', args: {}, feedback: 'Mengarahkan ke tampilan global bumi.' };

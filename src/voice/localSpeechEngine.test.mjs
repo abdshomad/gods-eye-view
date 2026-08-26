@@ -67,6 +67,16 @@ test('parseVoiceIntent: parses visual styles and demo tour', () => {
     args: {},
     feedback: 'Memulai simulasi tur fitur 3D Digital Twin.',
   });
+  assert.deepEqual(parseVoiceIntent('lapisan 3d osm'), {
+    tool: 'set_terrain_provider',
+    args: { provider: 'osm' },
+    feedback: 'Beralih ke lapisan bangunan 3D OpenStreetMap.',
+  });
+  assert.deepEqual(parseVoiceIntent('inspeksi borobudur'), {
+    tool: 'inspect_landmark_splat',
+    args: { landmarkId: 'borobudur' },
+    feedback: 'Memuat rekonstruksi 3D BOROBUDUR.',
+  });
 });
 
 test('parseVoiceIntent: parses cockpit toggles', () => {

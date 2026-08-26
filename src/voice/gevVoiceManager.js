@@ -63,6 +63,14 @@ export function createUnifiedVoiceManager({
       window.__gevProductTour?.start();
       return { success: true };
     }
+    if (tool === 'set_terrain_provider') {
+      await window.__godsEyeView?.terrainManager?.setProvider?.(args.provider);
+      return { success: true };
+    }
+    if (tool === 'inspect_landmark_splat') {
+      window.__godsEyeView?.splatManager?.loadLandmarkSplat?.(args.landmarkId);
+      return { success: true };
+    }
     if (actionRunner) return actionRunner(tool, args);
   };
 
