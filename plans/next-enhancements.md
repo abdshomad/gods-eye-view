@@ -1,9 +1,6 @@
-# Next Enhancements Plan (Focus: Public 3D Data & Gaussian Splatting)
+# Next Enhancements Plan (Focus: Demo Feature)
 
-## Completed Tasks
-- [DONE] TASK-S01: Implement OpenStreetMap & Microsoft 3D Building provider and multi-source 3D switcher in `src/terrain/terrainManager.js`.
-- [DONE] TASK-S02: Implement Geo-anchored 3D Gaussian Splat Manager (`src/splats/splatManager.js`) with WGS84 coordinate alignment and LOD culling.
-- [DONE] TASK-S03: Implement glTF open model registry (`src/data/models3d.js`) and verify with E2E suite `tests/06-open-3d-splats.mjs` capturing step screenshots.
-- [DONE] TASK-F01: Add Indonesian voice feedback for 3D terrain provider switching and landmark splat inspections.
-- [DONE] TASK-F02: Add telemetry inspection card for 3D Gaussian Splat landmarks with historical site metadata.
-- [DONE] TASK-F03: Implement high-altitude cloud cover and atmospheric lighting presets for Southeast Asia tropical climate.
+## Active Tasks
+- [TODO] TASK-D01: Add interactive stage drawer & jump selector (1-10 stages) with deep-linking (?stage=X) and speed multiplier (0.5x/1x/2x/4x) in `src/demoTour.js`.
+- [TODO] TASK-D02: Add bilingual narration/subtitle toggle (id-ID / en-US) and dynamic landmark orbital drone camera path in `src/demoTour.js`.
+- [TODO] TASK-D03: Verify extended demo capabilities with unit tests in `src/demoTour.test.mjs` and E2E suite `tests/04-indonesian-demo-mode.mjs`.
