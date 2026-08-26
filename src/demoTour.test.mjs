@@ -59,6 +59,11 @@ test('createDemoTourController: start, pause, jump, and stop lifecycle', () => {
   controller.jumpToStage(8);
   assert.equal(controller.getCurrentStage()?.id, 'thermal');
 
+  // Speed multiplier
+  assert.equal(controller.getSpeedMultiplier(), 1);
+  controller.setSpeedMultiplier(2);
+  assert.equal(controller.getSpeedMultiplier(), 2);
+
   // Stop
   assert.equal(controller.stop(), true);
   assert.equal(controller.isActive(), false);
