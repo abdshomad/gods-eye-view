@@ -1,1 +1,1 @@
-[FOCUS]: Glassmorphic semi-transparent spotlight backdrop overlay and dual-glow pulsing neon target rings
+[FOCUS]: 1-click voice button toggle lifecycle with audio chimes and active ripple state

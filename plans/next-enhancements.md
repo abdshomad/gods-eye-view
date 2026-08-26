@@ -1,6 +1,6 @@
-# Next Enhancements Plan (Focus: Glassmorphic Spotlight Overlay)
+# Next Enhancements Plan (Focus: 1-Click Voice Button Toggle)
 
 ## Active Tasks
-- [TODO] TASK-G01: Update `.spotlight-overlay` and `.spotlight-ring` in `style.css` with backdrop-filter glassmorphism and dual-glow cyan ring.
-- [TODO] TASK-G02: Ensure SVG/CSS clip-path mask in `src/productTour.js` produces crystal-clear inner cutout with frosted outer backdrop.
-- [TODO] TASK-G03: Verify glassmorphic spotlight visual treatment with unit tests in `src/productTour.test.mjs` and E2E suite `tests/05-product-tour-spotlight.mjs`.
+- [TODO] TASK-T01: Implement 1-click push-to-toggle with Web Audio API chime synthesis in `src/voice/gevVoiceManager.js`.
+- [TODO] TASK-T02: Add `.mic-listening` pulsing ripple animation and HUD status pill in `style.css`.
+- [TODO] TASK-T03: Verify mic toggle lifecycle with unit tests in `src/voice/gevVoiceManager.test.mjs` and E2E suite `tests/02-local-voice-commands.mjs`.
