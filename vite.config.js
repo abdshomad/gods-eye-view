@@ -7323,6 +7323,69 @@ function normalizeAisTimestamp(value) {
   return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
 }
 
+function brandingPlugin(appTitle) {
+  return {
+    name: 'gev-branding-plugin',
+    transformIndexHtml(html) {
+      if (!appTitle) return html;
+      let transformed = html;
+      const upperBrand = appTitle.toUpperCase();
+      // Split into two parts if multiple words for accented styling
+      const parts = upperBrand.split(' ');
+      const mainPart = parts.slice(0, -1).join(' ');
+      const accentPart = parts[parts.length - 1];
+      const styledBrandHtml = `<span>${mainPart} <span class="title-accent">${accentPart}</span></span>`;
+
+      transformed = transformed.replace(/<title>[^<]*<\/title>/i, `<title>${appTitle}</title>`);
+      transformed = transformed.replace(/<div id="loader-title"[^>]*>[^<]*<\/div>/i, `<div id="loader-title">${upperBrand}</div>`);
+      transformed = transformed.replace(/<span>GOD'S EYE <span class="title-accent">VIEW<\/span><\/span>/g, styledBrandHtml);
+      transformed = transformed.replace(/<h2>GOD'S EYE <span class="title-accent">VIEW<\/span><\/h2>/g, `<h2>${mainPart} <span class="title-accent">${accentPart}</span></h2>`);
+
+      const patchScript = `
+      <script>
+        (function() {
+          const brand = ${JSON.stringify(appTitle)};
+          const upperBrand = brand.toUpperCase();
+          let isApplying = false;
+          function applyBranding() {
+            if (isApplying) return;
+            isApplying = true;
+            try {
+              if (document.title !== brand) document.title = brand;
+              const loaderTitle = document.getElementById('loader-title');
+              if (loaderTitle && loaderTitle.textContent !== upperBrand) loaderTitle.textContent = upperBrand;
+              const titleSpans = document.querySelectorAll('#title-bar h1 > span:not(.title-logo)');
+              titleSpans.forEach(s => {
+                if (s.textContent.includes("GOD'S EYE")) {
+                  s.innerHTML = ${JSON.stringify(styledBrandHtml)};
+                }
+              });
+              const kickers = document.querySelectorAll('.gev-voice-kicker');
+              kickers.forEach(k => { if (k.textContent !== upperBrand && (k.textContent === "AI AGENT" || k.textContent.includes("GOD'S EYE VIEW"))) k.textContent = upperBrand; });
+              const helpKickers = document.querySelectorAll('.gev-voice-help-kicker');
+              helpKickers.forEach(k => { if (k.textContent !== upperBrand && (k.textContent.includes("GOD'S EYE VIEW") || k.textContent.includes("VOICE CONTROL"))) k.textContent = upperBrand; });
+              const welcomeTitles = document.querySelectorAll('.first-run-title, #first-run-title');
+              welcomeTitles.forEach(w => { if (w.textContent.includes("God's Eye View")) w.textContent = w.textContent.replace(/God's Eye View/g, brand); });
+            } finally {
+              isApplying = false;
+            }
+          }
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyBranding);
+          } else {
+            applyBranding();
+          }
+          try {
+            const observer = new MutationObserver(applyBranding);
+            observer.observe(document.documentElement, { childList: true, subtree: true, characterData: false });
+          } catch {}
+        })();
+      </script>`;
+      return transformed.replace('</head>', `${patchScript}\n</head>`);
+    },
+  };
+}
+
 /**
  * Main Vite configuration factory.
  *
@@ -7338,8 +7401,10 @@ export default defineConfig(({ mode }) => {
     if (process.env[key] === undefined) process.env[key] = val;
   }
   const env = { ...process.env };
+  const brandTitle = env.APP_TITLE || '3D Digital Twin';
   return {
     plugins: [
+      brandingPlugin(brandTitle),
       cesium(),
       openSkyProxy(),
       celestrakProxy(),
@@ -7373,6 +7438,7 @@ export default defineConfig(({ mode }) => {
     define: {
       'import.meta.env.GOOGLE_MAPS_API_KEY': JSON.stringify(env.GOOGLE_MAPS_API_KEY),
       'import.meta.env.CESIUM_ION_TOKEN': JSON.stringify(env.CESIUM_ION_TOKEN),
+      'import.meta.env.DEFAULT_LOCATION': JSON.stringify(env.DEFAULT_LOCATION || 'indonesia'),
     },
     build: {
       // The Cesium engine bundle is inherently large; raise the warning ceiling

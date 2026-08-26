@@ -672,11 +672,15 @@ export class IntelHUD {
       this._setSummaryText(data.summary, animate);
     } catch (error) {
       if (error?.name !== 'AbortError') {
-        console.warn('[HUD] AI summary unavailable:', error);
-        // Invalidate the committed signature so the next periodic tick
-        // retries instead of sticking on the fallback line forever.
-        this._lastSummarySignature = null;
-        this._summaryDirty = true;
+        const isMissingKey = /OPENAI_API_KEY is not set/i.test(error?.message || '');
+        if (!isMissingKey) {
+          console.warn('[HUD] AI summary unavailable:', error);
+          this._lastSummarySignature = null;
+          this._summaryDirty = true;
+        } else {
+          // Keep fallback text quietly without continuous 503 retry storm
+          this._summaryDirty = false;
+        }
       }
       this._setSummaryText(fallbackText, animate);
     } finally {

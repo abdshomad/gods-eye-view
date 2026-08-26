@@ -117,6 +117,30 @@ export const CITY_POIS = {
       { name: 'Jefferson Memorial', lat: 38.8814, lon: -77.0365, alt: 400, pitch: -30, heading: 0, buildingHeight: 25 },
     ],
   },
+  jakarta: {
+    name: 'Jakarta',
+    groundElevation: 8,
+    viewBounds: { southwest: { lat: -6.37, lng: 106.68 }, northeast: { lat: -6.08, lng: 106.97 } },
+    pois: [
+      { name: 'Monas (National Monument)', lat: -6.1754, lon: 106.8272, alt: 600, pitch: -25, heading: 0, buildingHeight: 132 },
+      { name: 'Gelora Bung Karno', lat: -6.2186, lon: 106.8018, alt: 750, pitch: -30, heading: 45, buildingHeight: 35 },
+      { name: 'Bundaran HI', lat: -6.1950, lon: 106.8230, alt: 500, pitch: -25, heading: 180, buildingHeight: 80 },
+      { name: 'Gama Tower', lat: -6.2255, lon: 106.8322, alt: 600, pitch: -20, heading: 30, buildingHeight: 285 },
+      { name: 'Istiqlal Mosque', lat: -6.1702, lon: 106.8314, alt: 500, pitch: -28, heading: 270, buildingHeight: 60 },
+    ],
+  },
+  indonesia: {
+    name: 'Indonesia',
+    groundElevation: 10,
+    viewBounds: { southwest: { lat: -11.0, lng: 95.0 }, northeast: { lat: 6.0, lng: 141.0 } },
+    pois: [
+      { name: 'Jakarta (Monas)', lat: -6.1754, lon: 106.8272, alt: 3500, pitch: -35, heading: 0, buildingHeight: 132 },
+      { name: 'IKN Nusantara', lat: -0.9632, lon: 116.7056, alt: 5000, pitch: -30, heading: 0, buildingHeight: 50 },
+      { name: 'Bali (Denpasar)', lat: -8.6705, lon: 115.2126, alt: 4000, pitch: -30, heading: 0, buildingHeight: 30 },
+      { name: 'Surabaya', lat: -7.2575, lon: 112.7521, alt: 4000, pitch: -30, heading: 0, buildingHeight: 50 },
+      { name: 'Bandung', lat: -6.9175, lon: 107.6191, alt: 4000, pitch: -30, heading: 0, buildingHeight: 40 },
+    ],
+  },
 };
 
 /**
@@ -348,26 +372,60 @@ export const CANCELLED_SEARCH = Object.freeze({ cancelled: true });
  */
 export async function searchAndFlyTo(viewer, query, options = {}) {
   const apiKey = window.__GOOGLE_MAPS_API_KEY__ || import.meta.env.GOOGLE_MAPS_API_KEY;
-  if (!apiKey) throw new Error('No Google Maps API key available for geocoding');
-
   const beforeFly = typeof options.beforeFly === 'function' ? options.beforeFly : null;
   const mayFly = () => beforeFly === null || beforeFly() !== false;
 
-  // Viewport-biased geocode — the same bias annotationResolver's geocodePlace uses:
-  // "Sixth Street" spoken over Austin must prefer the Sixth Street on screen, not a
-  // same-named road in another city (or the wrong end of town — the W 6th vs E 6th bug).
-  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${apiKey}`;
-  const bias = viewportBias(viewer);
-  if (bias) url += `&bounds=${bias}`;
-  const response = await fetch(url);
-  const data = await response.json();
+  let result = null;
+  let lat = null;
+  let lng = null;
+  let label = null;
+  let types = [];
+  let viewport = null;
 
-  const result = (data.status === 'OK' && data.results?.length) ? data.results[0] : null;
-  let lat = result?.geometry.location.lat;
-  let lng = result?.geometry.location.lng;
-  let label = result ? result.formatted_address : null;
-  let types = result?.types || [];
-  let viewport = result ? (result.geometry.bounds || result.geometry.viewport) : null;
+  if (apiKey && apiKey !== 'your_google_maps_api_key_here') {
+    try {
+      let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${apiKey}`;
+      const bias = viewportBias(viewer);
+      if (bias) url += `&bounds=${bias}`;
+      const response = await fetch(url);
+      if (response && typeof response.json === 'function') {
+        const data = await response.json();
+        if (data.status === 'OK' && data.results?.length) {
+          result = data.results[0];
+          lat = result.geometry.location.lat;
+          lng = result.geometry.location.lng;
+          label = result.formatted_address;
+          types = result.types || [];
+          viewport = result.geometry.bounds || result.geometry.viewport;
+        }
+      }
+    } catch {}
+  }
+
+  // Keyless OpenStreetMap Nominatim fallback (e.g. "indonesia", "japan", "london")
+  if (!result) {
+    try {
+      const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+      const nomRes = await fetch(nomUrl, { headers: { 'Accept': 'application/json' } });
+      if (nomRes.ok) {
+        const nomData = await nomRes.json();
+        if (nomData?.length) {
+          const item = nomData[0];
+          lat = parseFloat(item.lat);
+          lng = parseFloat(item.lon);
+          label = item.display_name;
+          types = [item.type || 'locality'];
+          result = { lat, lng, formatted_address: label };
+          if (item.boundingbox) {
+            viewport = {
+              southwest: { lat: parseFloat(item.boundingbox[0]), lng: parseFloat(item.boundingbox[2]) },
+              northeast: { lat: parseFloat(item.boundingbox[1]), lng: parseFloat(item.boundingbox[3]) },
+            };
+          }
+        }
+      }
+    } catch {}
+  }
 
   // Places-near-view recovery (annotationResolver's twin): a missed geocode, or one
   // that landed implausibly far from the view centre, snaps back to a view-biased

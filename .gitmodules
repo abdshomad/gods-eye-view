@@ -1,0 +1,3 @@
+[submodule "autonomous-coding-agents"]
+	path = autonomous-coding-agents
+	url = https://github.com/abdshomad/autonomous-coding-agents.git

@@ -1,4 +1,5 @@
 import { createGevActionRunner, readLayerLifecycleSummary } from './gevActions.js';
+import { createUnifiedVoiceManager } from './gevVoiceManager.js';
 import {
   DEFAULT_VOICE_TIER,
   VOICE_COST_LIMITS,
@@ -201,6 +202,12 @@ export function initGevVoiceCommands({ viewer, styleManager, dataManager, sceneD
   const ui = createVoiceControl({ reset: true });
   const radioLayer = dataManager?.layers?.get('radio')?.module || null;
   const controller = new GevRealtimeController({ runner, ui, radioLayer, dataManager });
+  const voiceManager = createUnifiedVoiceManager({
+    actionRunner: runner,
+    cloudController: controller,
+    ui,
+  });
+  controller.voiceManager = voiceManager;
   // Deferred annotation outlines finish AFTER their tool result returned. Feed the
   // final outcome (resolved / failed) into the conversation so the model can honestly
   // confirm — or correct — what it narrated about a boundary it never saw land.
@@ -211,8 +218,7 @@ export function initGevVoiceCommands({ viewer, styleManager, dataManager, sceneD
   }
   controller.buttonHandler = () => {
     if (shouldIgnoreVoiceButtonClick(controller.spaceKeyHeld)) return;
-    if (controller.isActive()) controller.stop();
-    else controller.start({ pushToTalk: false });
+    voiceManager.toggle();
   };
   ui.button.addEventListener('click', controller.buttonHandler);
   if (ui.tierButton) {
@@ -585,6 +591,12 @@ export class GevRealtimeController {
       event.preventDefault();
       this.pauseRadioForVoice();
       if (this.pushToTalkKeyHeld) return;
+      if (this.voiceManager?.getMode() === 'local') {
+        this.pushToTalkKeyHeld = true;
+        this.ui.root.dataset.pushToTalk = 'held';
+        this.voiceManager.start();
+        return;
+      }
       // A click-started session is intentionally open-mic. Space only claims an
       // idle session (or a session it already started) so releasing the key can
       // never surprise the user by muting a click-started conversation.
@@ -602,6 +614,13 @@ export class GevRealtimeController {
       if (!isPushToTalkKey(event)) return;
       const wasHoldingSpace = this.spaceKeyHeld;
       this.spaceKeyHeld = false;
+      if (this.voiceManager?.getMode() === 'local') {
+        this.pushToTalkKeyHeld = false;
+        delete this.ui.root.dataset.pushToTalk;
+        this.voiceManager.stop();
+        event.preventDefault();
+        return;
+      }
       if (!this.pushToTalkKeyHeld) {
         if (wasHoldingSpace) event.preventDefault();
         return;

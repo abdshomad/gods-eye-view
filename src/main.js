@@ -1,6 +1,6 @@
 import * as Cesium from 'cesium';
 import { StyleManager } from './ui.js';
-import { flyToAustin } from './camera.js';
+import { flyToAustin, flyToIndonesia } from './camera.js';
 import { DataLayerManager } from './data/manager.js';
 import flightsLayer from './data/flights.js';
 import militaryFlightsLayer from './data/militaryFlights.js';
@@ -23,6 +23,10 @@ import { MapStackController } from './mapStackController.js';
 import { initAnnotations } from './annotations/index.js';
 import { initLogoGaze } from './logoGaze.js';
 import { initCockpitCloudEffects } from './cockpitCloudEffects.js';
+import { createDemoTourController } from './demoTour.js';
+import { createProductTourController } from './productTour.js';
+import { TerrainManager } from './terrain/terrainManager.js';
+import { SplatManager } from './splats/splatManager.js';
 import {
   installRenderGovernor,
   getRenderGovernorDiagnostics,
@@ -79,15 +83,12 @@ async function init() {
       Cesium.Ion.defaultAccessToken = cesiumToken;
     }
 
-    // Set Google Maps API key for 3D Tiles
+    // Set Google Maps API key for 3D Tiles if valid
     const googleApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
-    if (!googleApiKey) {
-      throw new Error('GOOGLE_MAPS_API_KEY not found. Set it as an environment variable.');
+    if (googleApiKey && googleApiKey !== 'your_google_maps_api_key_here') {
+      Cesium.GoogleMaps.defaultApiKey = googleApiKey;
+      window.__GOOGLE_MAPS_API_KEY__ = googleApiKey;
     }
-    Cesium.GoogleMaps.defaultApiKey = googleApiKey;
-
-    // Expose API key globally for geocoding in locations.js
-    window.__GOOGLE_MAPS_API_KEY__ = googleApiKey;
 
     // Create the Cesium viewer with minimal chrome
     const viewer = new Cesium.Viewer('cesiumContainer', {
@@ -153,22 +154,22 @@ async function init() {
     viewer.scene.skyAtmosphere.saturationShift = -0.12;
     viewer.scene.skyAtmosphere.brightnessShift = -0.08;
 
-    loaderStatus.textContent = 'Loading Google 3D Tiles...';
     let tileset = null;
-    try {
-      // Load Google Photorealistic 3D Tiles
-      tileset = await Cesium.createGooglePhotorealistic3DTileset({
-        onlyUsingWithGoogleGeocoder: true,
-      });
-      viewer.scene.primitives.add(tileset);
-      // NOTE: Cesium World Terrain intentionally disabled — conflicts with Google 3D Tiles at high zoom.
-      // Google Photorealistic 3D Tiles provide their own terrain/elevation.
-      viewer.scene.globe.show = false;
-    } catch (tileError) {
-      console.warn('[Init] Google 3D Tiles unavailable, falling back to Cesium globe:', tileError);
-      const tileErrorDetail = describeError(tileError);
-      loaderStatus.textContent = `Google 3D Tiles unavailable (${tileErrorDetail}). Continuing in fallback mode...`;
-      // Keep Cesium globe visible as fallback instead of aborting the app.
+    if (googleApiKey && googleApiKey !== 'your_google_maps_api_key_here') {
+      loaderStatus.textContent = 'Loading Google 3D Tiles...';
+      try {
+        tileset = await Cesium.createGooglePhotorealistic3DTileset({
+          onlyUsingWithGoogleGeocoder: true,
+        });
+        viewer.scene.primitives.add(tileset);
+        viewer.scene.globe.show = false;
+      } catch (tileError) {
+        console.warn('[Init] Google 3D Tiles unavailable, falling back to Cesium globe:', tileError);
+        const tileErrorDetail = describeError(tileError);
+        loaderStatus.textContent = `Google 3D Tiles unavailable (${tileErrorDetail}). Continuing in fallback mode...`;
+        viewer.scene.globe.show = true;
+      }
+    } else {
       viewer.scene.globe.show = true;
     }
 
@@ -198,10 +199,16 @@ async function init() {
     const weatherEffects = null;
     const cockpitCloudEffects = initCockpitCloudEffects(viewer);
 
-    // If no share link state, do default fly-to Austin
+    // If no share link state, do default fly-to Indonesia
     if (!styleManager.hasShareState) {
-      loaderStatus.textContent = 'Flying to Austin, TX...';
-      flyToAustin(viewer);
+      const defaultLoc = (import.meta.env.DEFAULT_LOCATION || 'indonesia').toLowerCase();
+      if (defaultLoc === 'austin') {
+        loaderStatus.textContent = 'Flying to Austin, TX...';
+        flyToAustin(viewer);
+      } else {
+        loaderStatus.textContent = 'Flying to Indonesia...';
+        flyToIndonesia(viewer);
+      }
     } else {
       loaderStatus.textContent = 'Restoring shared view...';
     }
@@ -325,6 +332,16 @@ async function init() {
       requestRender: governorRequestRender,
     };
     window.__godsEyeView.voiceCommands = initGevVoiceCommands({ viewer, styleManager, dataManager, sceneDirector, annotations });
+    const demoTour = createDemoTourController({ viewer, styleManager, dataManager });
+    window.__gevDemoTour = demoTour;
+    window.__godsEyeView.demoTour = demoTour;
+    const productTour = createProductTourController();
+    window.__gevProductTour = productTour;
+    window.__godsEyeView.productTour = productTour;
+    const terrainManager = new TerrainManager(viewer, { googleApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY });
+    const splatManager = new SplatManager(viewer);
+    window.__godsEyeView.terrainManager = terrainManager;
+    window.__godsEyeView.splatManager = splatManager;
 
   } catch (error) {
     console.error("God's Eye View initialization failed:", error);

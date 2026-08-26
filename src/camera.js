@@ -29,6 +29,30 @@ export const CAMERA_PRESETS = {
       roll: 0.0,
     },
   },
+  indonesia: {
+    destination: Cesium.Cartesian3.fromDegrees(106.8272, -6.1754, 3000),
+    orientation: {
+      heading: Cesium.Math.toRadians(0),
+      pitch: Cesium.Math.toRadians(-35),
+      roll: 0.0,
+    },
+  },
+  jakarta: {
+    destination: Cesium.Cartesian3.fromDegrees(106.8272, -6.1754, 1200),
+    orientation: {
+      heading: Cesium.Math.toRadians(15),
+      pitch: Cesium.Math.toRadians(-30),
+      roll: 0.0,
+    },
+  },
+  nusantara: {
+    destination: Cesium.Cartesian3.fromDegrees(116.7056, -0.9632, 2500),
+    orientation: {
+      heading: Cesium.Math.toRadians(0),
+      pitch: Cesium.Math.toRadians(-30),
+      roll: 0.0,
+    },
+  },
 };
 
 /**
@@ -44,6 +68,33 @@ export function flyToPreset(viewer, presetName, duration = 3.0) {
     duration,
     easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
   });
+}
+
+/**
+ * Set camera to Indonesia on load with a cinematic fly-in.
+ */
+export function flyToIndonesia(viewer) {
+  viewer.camera.setView({
+    destination: Cesium.Cartesian3.fromDegrees(106.8272, -6.1754, 50000),
+    orientation: {
+      heading: Cesium.Math.toRadians(0),
+      pitch: Cesium.Math.toRadians(-90),
+      roll: 0.0,
+    },
+  });
+
+  setTimeout(() => {
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(106.8272, -6.1754, 1800),
+      orientation: {
+        heading: Cesium.Math.toRadians(15),
+        pitch: Cesium.Math.toRadians(-30),
+        roll: 0.0,
+      },
+      duration: 4.0,
+      easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
+    });
+  }, 500);
 }
 
 /**
